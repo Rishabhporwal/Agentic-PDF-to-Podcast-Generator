@@ -1,0 +1,10 @@
+{
+  "pdf_path": "Vestas Annual Report 2024.pdf",
+  "sections": {
+    "Letter from the Chair & CEO": [3, 4],
+    "Market outlook": [17, 18],
+    "Corporate strategy": [19, 21],
+    "Service": [31, 31]
+  },
+  "target_word_count": 2000
+}

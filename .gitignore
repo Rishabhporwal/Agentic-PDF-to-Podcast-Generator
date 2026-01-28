@@ -1,0 +1,249 @@
+# ==========================================
+# SENSITIVE FILES - NEVER COMMIT
+# ==========================================
+
+# Environment variables (contains API keys)
+.env
+.env.local
+.env.*.local
+
+# API keys and credentials
+*.key
+*.pem
+*_credentials.json
+secrets.json
+
+# ==========================================
+# GENERATED OUTPUTS
+# ==========================================
+
+# Generated podcast scripts and reports
+example_output/
+!example_output/.gitkeep
+
+# Log files
+logs/
+!logs/.gitkeep
+
+# Temporary outputs
+temp_outputs/
+output/
+results/
+
+# ==========================================
+# PDF FILES
+# ==========================================
+
+# All PDF files (can be large)
+*.pdf
+
+# Exception: Keep example/demo PDFs if needed (uncomment if you want to include)
+# !example.pdf
+# !demo.pdf
+
+# ==========================================
+# PYTHON
+# ==========================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+claude.md
+GIT_QUICK_SETUP.md
+GITHUB_SETUP.md
+COMMANDS_CHEATSHEET.md
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# ==========================================
+# IDE & EDITORS
+# ==========================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ==========================================
+# STREAMLIT
+# ==========================================
+
+# Streamlit cache
+.streamlit/
+
+# ==========================================
+# LANGGRAPH & AI MODELS
+# ==========================================
+
+# LangSmith traces
+.langsmith/
+
+# Model checkpoints (if downloading models locally)
+models/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+temp/
+tmp/
+
+# Test outputs
+test_output/
+test_results/
+
+# ==========================================
+# MISC
+# ==========================================
+
+# npm (if using any JavaScript tools)
+node_modules/
+package-lock.json
+
+# Backup files
+*.backup
+*.old
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Database files (if any)
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# PROJECT SPECIFIC
+# ==========================================
+
+# Don't commit large test PDFs
+*annual_report*.pdf
+*test*.pdf
+
+# Don't commit personal config overrides
+config.local.json
+my_config.json
+
+# Don't commit task output files
+/private/
+
+# Streamlit run output
+run.log
