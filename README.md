@@ -21,7 +21,6 @@ This system takes a PDF document, extracts specified sections, generates a natur
 
 - **[FINAL_GUIDE.md](FINAL_GUIDE.md)** - ⭐ **START HERE** - Complete guide with logging details
 - **[SETUP_AND_RUN.md](SETUP_AND_RUN.md)** - Step-by-step setup instructions
-- **[COMMANDS_CHEATSHEET.md](COMMANDS_CHEATSHEET.md)** - Quick command reference
 - **[QUICKSTART.md](QUICKSTART.md)** - 2-minute quick start
 - **[process.md](process.md)** - Technical architecture and decisions
 - **[IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md)** - Ollama vs Claude comparison

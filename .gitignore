@@ -74,7 +74,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 claude.md
-GIT_QUICK_SETUP.md
+GIT_QUICK_START.md
 GITHUB_SETUP.md
 COMMANDS_CHEATSHEET.md
 # PyInstaller
