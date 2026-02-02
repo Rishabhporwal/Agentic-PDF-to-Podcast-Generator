@@ -1,0 +1,87 @@
+{
+  "claim_traceability": [
+    {
+      "claim": "Vestas continued its positive trajectory in 2024",
+      "claim_type": "business_fact",
+      "traceable": "YES",
+      "source_evidence": "Letter from the Chair & CEO: Progress in a challenging year",
+      "source_section": "Letter from the Chair & CEO",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "Our energy solutions proved their competitiveness yet again, highlighting the value of extending product life cycles and accelerating industrialisation.",
+      "claim_type": "strategy",
+      "traceable": "YES",
+      "source_evidence": "Letter from the Chair & CEO: Progress in a challenging year",
+      "source_section": "Letter from the Chair & CEO",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "Our profitability increased 6.1 percentage-points year-on-year, despite quality not being where it needs to be.",
+      "claim_type": "number",
+      "traceable": "YES",
+      "source_evidence": "Letter from the Chair & CEO: Progress in a challenging year",
+      "source_section": "Letter from the Chair & CEO",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "Our Offshore business continued to grow with 4.6 GW of order intake, while Development also contributed significantly to Vestas’ earnings.",
+      "claim_type": "number",
+      "traceable": "YES",
+      "source_evidence": "Letter from the Chair & CEO: Progress in a challenging year",
+      "source_section": "Letter from the Chair & CEO",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "Wind energy is pivotal in this context, because it lowers energy prices, builds energy independence and helps to meet growing energy demand across the globe.",
+      "claim_type": "market_condition",
+      "traceable": "YES",
+      "source_evidence": "Letter from the Chair & CEO: Progress in a challenging year",
+      "source_section": "Letter from the Chair & CEO",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "Renewables continue to outperform fossil fuels*",
+      "claim_type": "market_condition",
+      "traceable": "YES",
+      "source_evidence": "Market outlook: Levelised Cost of Electricity",
+      "source_section": "Market outlook",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "Today, wind electricity accounts for merely 2% of the global energy mix.",
+      "claim_type": "number",
+      "traceable": "NO",
+      "source_evidence": "None",
+      "source_section": "None",
+      "confidence": "LOW"
+    },
+    {
+      "claim": "Our active service contracts span more than 56,000 wind turbines across 71 countries.",
+      "claim_type": "number",
+      "traceable": "YES",
+      "source_evidence": "Service: Scalability in a global service business",
+      "source_section": "Service",
+      "confidence": "HIGH"
+    },
+    {
+      "claim": "We aim to make all new service vehicles zero-emission from 2025.",
+      "claim_type": "strategy",
+      "traceable": "YES",
+      "source_evidence": "Service: Driving sustainability in Service",
+      "source_section": "Service",
+      "confidence": "HIGH"
+    }
+  ],
+  "hallucination_flags": [],
+  "coverage_analysis": {
+    "sections": [],
+    "error": "Failed to parse coverage analysis"
+  },
+  "summary": {
+    "total_claims": 9,
+    "hallucinated_claims": 0,
+    "sections_analyzed": 4
+  },
+  "coverage_error": "Failed to parse coverage analysis"
+}

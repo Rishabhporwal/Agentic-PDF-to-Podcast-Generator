@@ -18,7 +18,6 @@ secrets.json
 # ==========================================
 
 # Generated podcast scripts and reports
-example_output/
 !example_output/.gitkeep
 
 # Log files
@@ -73,7 +72,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-claude.md
 GIT_QUICK_START.md
 GITHUB_SETUP.md
 COMMANDS_CHEATSHEET.md

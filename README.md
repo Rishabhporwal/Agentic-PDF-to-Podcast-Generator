@@ -24,6 +24,7 @@ This system takes a PDF document, extracts specified sections, generates a natur
 - **[QUICKSTART.md](QUICKSTART.md)** - 2-minute quick start
 - **[process.md](process.md)** - Technical architecture and decisions
 - **[IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md)** - Ollama vs Claude comparison
+- **[master_prompt.md](master_prompt.md)** - Master/Developer Prompt
 
 ## Architecture
 

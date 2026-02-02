@@ -221,11 +221,30 @@ with tab1:
                 if provider_type == "anthropic" and not anthropic_key:
                     st.error("❌ Please provide Anthropic API key in the sidebar")
                 else:
-                    # Prepare sections config
-                    sections_config = {
-                        section['name']: [section['start'], section['end']]
-                        for section in st.session_state.sections
-                    }
+                    # Validate sections
+                    if not st.session_state.sections:
+                        st.error("❌ Please add at least one section to extract")
+                    else:
+                        try:
+                            # Prepare sections config with validation
+                            sections_config = {}
+                            for section in st.session_state.sections:
+                                section_name = section.get('name', 'Unknown Section')
+                                start_page = section.get('start', 1)
+                                end_page = section.get('end', 1)
+
+                                if not section_name or section_name.strip() == '':
+                                    st.warning(f"⚠️ Section without name found, using default name")
+                                    section_name = f"Section {len(sections_config) + 1}"
+
+                                sections_config[section_name] = [start_page, end_page]
+
+                            if not sections_config:
+                                st.error("❌ No valid sections configured")
+                                st.stop()
+                        except Exception as e:
+                            st.error(f"❌ Error preparing section configuration: {str(e)}")
+                            st.stop()
 
                     # Progress tracking
                     progress_bar = st.progress(0)
@@ -266,11 +285,18 @@ with tab1:
                         status_text.text("✅ Generation complete!")
 
                         # Check if successful
-                        if final_state["status"] == "verification_complete":
-                            # Store results in session state
-                            st.session_state.script = final_state["podcast_script"]
-                            st.session_state.verification = final_state["verification_report"]
-                            st.session_state.extracted_sections = final_state["extracted_sections"]
+                        if final_state.get("status") == "verification_complete":
+                            # Store results in session state with validation
+                            st.session_state.script = final_state.get("podcast_script", "")
+                            st.session_state.verification = final_state.get("verification_report", {})
+                            st.session_state.extracted_sections = final_state.get("extracted_sections", {})
+
+                            # Validate that we got actual content
+                            if not st.session_state.script:
+                                st.warning("⚠️ Script was generated but appears to be empty")
+
+                            if not st.session_state.verification:
+                                st.warning("⚠️ Verification report is empty")
 
                             st.success("🎉 Podcast script generated successfully!")
                             st.info("👉 Check the **Results** tab to view and download your podcast script")
@@ -278,8 +304,15 @@ with tab1:
                             # Auto-switch to results tab (user needs to click)
                             st.balloons()
                         else:
-                            error_msg = final_state.get("error", "Unknown error")
+                            error_msg = final_state.get("error", "Unknown error occurred during generation")
                             st.error(f"❌ Generation failed: {error_msg}")
+
+                            # Show debug info if available
+                            if final_state.get("status"):
+                                st.info(f"Final status: {final_state['status']}")
+
+                            with st.expander("🔍 Debug Information"):
+                                st.json(final_state)
 
                     except Exception as e:
                         st.error(f"❌ Error: {str(e)}")
@@ -302,115 +335,179 @@ with tab2:
     st.subheader("📊 Generated Results")
 
     if 'script' in st.session_state and st.session_state.script:
-        # Script section
-        st.markdown("### 🎙️ Podcast Script")
+        try:
+            # Script section
+            st.markdown("### 🎙️ Podcast Script")
 
-        script = st.session_state.script
-        word_count = count_words(script)
+            script = st.session_state.script
+            word_count = count_words(script) if script else 0
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Word Count", word_count)
-        with col2:
-            st.metric("Est. Duration", f"~{word_count // 150} min")
-        with col3:
-            claims = len(st.session_state.verification.get("claim_traceability", []))
-            st.metric("Claims Verified", claims)
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Word Count", word_count)
+            with col2:
+                est_duration = max(1, word_count // 150)  # At least 1 minute
+                st.metric("Est. Duration", f"~{est_duration} min")
+            with col3:
+                verification = st.session_state.get('verification', {})
+                claims = len(verification.get("claim_traceability", []))
+                st.metric("Claims Verified", claims)
 
-        # Display script
-        st.markdown("---")
-        st.markdown(script)
+            # Display script
+            st.markdown("---")
+            if script:
+                st.markdown(script)
+            else:
+                st.warning("⚠️ Script is empty")
 
-        # Download button
-        st.download_button(
-            label="📥 Download Script",
-            data=script,
-            file_name="podcast_script.md",
-            mime="text/markdown",
-            use_container_width=True
-        )
+            # Download button
+            st.download_button(
+                label="📥 Download Script",
+                data=script if script else "No script generated",
+                file_name="podcast_script.md",
+                mime="text/markdown",
+                use_container_width=True
+            )
 
-        st.divider()
+            st.divider()
+        except Exception as e:
+            st.error(f"❌ Error displaying script: {str(e)}")
+            with st.expander("🔍 Debug Information"):
+                st.write("Script type:", type(st.session_state.script))
+                st.write("Script length:", len(str(st.session_state.script)) if st.session_state.script else 0)
 
         # Verification report
         st.markdown("### 🔍 Verification Report")
 
         verification = st.session_state.verification
 
-        # Summary metrics
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric(
-                "Total Claims",
-                verification['summary']['total_claims']
-            )
-        with col2:
-            hallucinations = verification['summary']['hallucinated_claims']
-            st.metric(
-                "Hallucinations",
-                hallucinations,
-                delta=None,
-                delta_color="inverse"
-            )
-        with col3:
-            st.metric(
-                "Sections Analyzed",
-                verification['summary']['sections_analyzed']
-            )
-
-        # Show hallucination flags if any
-        if verification['hallucination_flags']:
-            st.warning("⚠️ Hallucinations Detected")
-            for flag in verification['hallucination_flags']:
-                st.error(f"**Claim:** {flag['claim']}\n\n**Reason:** {flag['reason']}")
-        else:
-            st.success("✅ No hallucinations detected - all claims are traceable to source material")
-
-        # Claim traceability in expander
-        with st.expander("📋 Detailed Claim Traceability"):
-            for i, claim in enumerate(verification['claim_traceability'], 1):
-                st.markdown(f"**Claim {i}:** {claim['claim']}")
-                st.caption(f"Type: {claim['claim_type']} | Traceable: {claim['traceable']} | Confidence: {claim['confidence']}")
-                if claim.get('source_evidence'):
-                    st.info(f"📄 Source: {claim['source_evidence'][:200]}...")
-                st.markdown("---")
-
-        # Coverage analysis
-        with st.expander("📊 Coverage Analysis"):
-            if 'sections' in verification['coverage_analysis']:
-                for section in verification['coverage_analysis']['sections']:
-                    st.markdown(f"### {section['section_name']}")
-                    st.caption(f"Overall Coverage: **{section['overall_coverage']}**")
-
-                    for point in section['key_points']:
-                        icon = {"FULL": "✅", "PARTIAL": "⚠️", "OMITTED": "❌"}.get(point['coverage'], "❓")
-                        st.markdown(f"{icon} **{point['coverage']}**: {point['point']}")
-
-                    st.markdown("---")
-
-        # Download verification report
-        report_md = format_verification_report(verification)
-        st.download_button(
-            label="📥 Download Verification Report",
-            data=report_md,
-            file_name="verification_report.md",
-            mime="text/markdown",
-            use_container_width=True
-        )
-
-        # Extracted sections
-        st.divider()
-        with st.expander("📄 View Extracted Source Content"):
-            for section_name, content in st.session_state.extracted_sections.items():
-                st.markdown(f"### {section_name}")
-                st.caption(f"{count_words(content)} words")
-                st.text_area(
-                    "Content",
-                    value=content,
-                    height=200,
-                    key=f"extract_{section_name}",
-                    label_visibility="collapsed"
+        # Check if verification data is valid
+        try:
+            # Summary metrics
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric(
+                    "Total Claims",
+                    verification.get('summary', {}).get('total_claims', 0)
                 )
+            with col2:
+                hallucinations = verification.get('summary', {}).get('hallucinated_claims', 0)
+                st.metric(
+                    "Hallucinations",
+                    hallucinations,
+                    delta=None,
+                    delta_color="inverse"
+                )
+            with col3:
+                st.metric(
+                    "Sections Analyzed",
+                    verification.get('summary', {}).get('sections_analyzed', 0)
+                )
+
+            # Show warnings if verification had errors
+            if 'verification_error' in verification:
+                st.warning(f"⚠️ Claim extraction had issues: {verification['verification_error']}")
+            if 'coverage_error' in verification:
+                st.warning(f"⚠️ Coverage analysis had issues: {verification['coverage_error']}")
+
+            # Show hallucination flags if any
+            hallucination_flags = verification.get('hallucination_flags', [])
+            if hallucination_flags:
+                st.warning("⚠️ Hallucinations Detected")
+                for flag in hallucination_flags:
+                    claim_text = flag.get('claim', 'Unknown claim')
+                    reason_text = flag.get('reason', 'No reason provided')
+                    st.error(f"**Claim:** {claim_text}\n\n**Reason:** {reason_text}")
+            else:
+                st.success("✅ No hallucinations detected - all claims are traceable to source material")
+
+            # Claim traceability in expander
+            with st.expander("📋 Detailed Claim Traceability"):
+                claims = verification.get('claim_traceability', [])
+                if claims:
+                    for i, claim in enumerate(claims, 1):
+                        claim_text = claim.get('claim', 'Unknown claim')
+                        claim_type = claim.get('claim_type', 'unknown')
+                        traceable = claim.get('traceable', 'UNKNOWN')
+                        confidence = claim.get('confidence', 'UNKNOWN')
+
+                        st.markdown(f"**Claim {i}:** {claim_text}")
+                        st.caption(f"Type: {claim_type} | Traceable: {traceable} | Confidence: {confidence}")
+
+                        source_evidence = claim.get('source_evidence')
+                        if source_evidence:
+                            st.info(f"📄 Source: {source_evidence[:200]}...")
+                        st.markdown("---")
+                else:
+                    st.info("No claims extracted from script")
+
+            # Coverage analysis
+            with st.expander("📊 Coverage Analysis"):
+                coverage_sections = verification.get('coverage_analysis', {}).get('sections', [])
+                if coverage_sections:
+                    for section in coverage_sections:
+                        # Use .get() with defaults for all fields
+                        section_name = section.get('section_name', 'Unknown Section')
+                        overall_coverage = section.get('overall_coverage', 'UNKNOWN')
+
+                        st.markdown(f"### {section_name}")
+                        st.caption(f"Overall Coverage: **{overall_coverage}**")
+
+                        key_points = section.get('key_points', [])
+                        if key_points:
+                            for point in key_points:
+                                coverage = point.get('coverage', 'UNKNOWN')
+                                point_text = point.get('point', 'Unknown point')
+                                icon = {"FULL": "✅", "PARTIAL": "⚠️", "OMITTED": "❌"}.get(coverage, "❓")
+                                st.markdown(f"{icon} **{coverage}**: {point_text}")
+                        else:
+                            st.info("No key points identified")
+
+                        st.markdown("---")
+                else:
+                    st.info("No coverage analysis available")
+
+        except Exception as e:
+            st.error(f"❌ Error displaying verification report: {str(e)}")
+            with st.expander("🔍 Debug Information"):
+                st.json(verification)
+
+            # Download verification report
+            try:
+                report_md = format_verification_report(verification)
+                st.download_button(
+                    label="📥 Download Verification Report",
+                    data=report_md,
+                    file_name="verification_report.md",
+                    mime="text/markdown",
+                    use_container_width=True
+                )
+            except Exception as e:
+                st.error(f"❌ Error formatting verification report: {str(e)}")
+
+            # Extracted sections
+            st.divider()
+            with st.expander("📄 View Extracted Source Content"):
+                try:
+                    extracted_sections = st.session_state.get('extracted_sections', {})
+                    if extracted_sections:
+                        for section_name, content in extracted_sections.items():
+                            st.markdown(f"### {section_name}")
+                            if content:
+                                st.caption(f"{count_words(content)} words")
+                                st.text_area(
+                                    "Content",
+                                    value=content,
+                                    height=200,
+                                    key=f"extract_{section_name}",
+                                    label_visibility="collapsed"
+                                )
+                            else:
+                                st.warning(f"⚠️ No content extracted for {section_name}")
+                    else:
+                        st.info("No extracted sections available")
+                except Exception as e:
+                    st.error(f"❌ Error displaying extracted sections: {str(e)}")
 
     else:
         st.info("👈 Generate a podcast first to see results here")
